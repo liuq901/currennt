@@ -234,6 +234,9 @@ the forward pass to obtain the network outputs for certain input sequences.
   Sets the momentum for the steepest descent optimizer. The default value is
   0.9.
 
+--l2_norm <value>
+  Sets the l2 norm for the steepest descent optimizer. The default value is 0.
+
 --save_network <file.jsn>
   Sets the file name of the network file that is created when training is
   finished. The file will contain the network structure (the same as the one
@@ -431,10 +434,11 @@ Available hidden and output layer types:
 * blstm                = Bidir.  LSTM layer with forget gates and peepholes
 
 Available post output layers:
-* sse                       = Sum of Squared Error objective function
-* rmse                      = Root Mean Squared Error objective function
-* binary_classification     = To be used with a ff logistic output layer
-* multiclass_classification = To be used with a softmax output layer
+* sse                                   = Sum of Squared Error objective function
+* rmse                                  = Root Mean Squared Error objective function
+* binary_classification                 = To be used with a ff logistic output layer
+* multiclass_classification             = To be used with a softmax output layer
+* connectionist_temporal_classification = To be used with a CTC layer
 
 
 +=============================================================================+
