@@ -30,6 +30,7 @@
 #include "layers/RmsePostOutputLayer.hpp"
 #include "layers/BinaryClassificationLayer.hpp"
 #include "layers/MulticlassClassificationLayer.hpp"
+#include "layers/CtcLayer.hpp"
 #include "activation_functions/Tanh.cuh"
 #include "activation_functions/Logistic.cuh"
 #include "activation_functions/Identity.cuh"
@@ -60,7 +61,7 @@ layers::Layer<TDevice>* LayerFactory<TDevice>::createLayer(
     	return new LstmLayer<TDevice>(layerChild, weightsSection, *precedingLayer, false);
     else if (layerType == "blstm")
     	return new LstmLayer<TDevice>(layerChild, weightsSection, *precedingLayer, true);
-    else if (layerType == "sse" || layerType == "rmse" || layerType == "binary_classification" || layerType == "multiclass_classification") {
+    else if (layerType == "sse" || layerType == "rmse" || layerType == "binary_classification" || layerType == "multiclass_classification" || layerType == "connectionist_temporal_classification") {
         layers::TrainableLayer<TDevice>* precedingTrainableLayer = dynamic_cast<layers::TrainableLayer<TDevice>*>(precedingLayer);
         if (!precedingTrainableLayer)
     	    throw std::runtime_error("Cannot add post output layer after a non trainable layer");
@@ -71,8 +72,12 @@ layers::Layer<TDevice>* LayerFactory<TDevice>::createLayer(
             return new RmsePostOutputLayer<TDevice>(layerChild, *precedingTrainableLayer);
         else if (layerType == "binary_classification")
     	    return new BinaryClassificationLayer<TDevice>(layerChild, *precedingTrainableLayer);
-        else // if (layerType == "multiclass_classification")
+        else if (layerType == "multiclass_classification")
     	    return new MulticlassClassificationLayer<TDevice>(layerChild, *precedingTrainableLayer);
+    	else if (layerType == "connectionist_temporal_classification")
+    	    return new CtcLayer<TDevice>(layerChild, *precedingTrainableLayer);
+	else
+	    throw std::runtime_error(std::string("Unknown layer type '") + layerType + "'");
     }
     else
         throw std::runtime_error(std::string("Unknown layer type '") + layerType + "'");

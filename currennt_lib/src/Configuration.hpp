@@ -68,6 +68,7 @@ private:
 
     real_t m_learningRate;
     real_t m_momentum;
+    real_t m_l2norm;
     real_t m_weightsUniformMin;
     real_t m_weightsUniformMax;
     real_t m_weightsNormalSigma;
@@ -226,6 +227,13 @@ public:
      * @return The momentum for the steepest descent optimizer
      */
     real_t momentum() const;
+
+    /**
+     * Returns the l2 norm for the steepest descent optimizer
+     *
+     * @return The l2 norm for the steepest descent optimizer
+     */
+    real_t l2norm() const;
 
     /**
      * Returns the path to the NN layout and weights file

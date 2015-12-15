@@ -40,6 +40,7 @@ namespace {
     {
         real_t learningRate;
         real_t momentum;
+        real_t l2norm;
 
         const real_t *weights;
         const real_t *weightUpdates;
@@ -52,7 +53,7 @@ namespace {
             weightDeltas[weightIdx] = delta;
 
             // calculate the new weight
-            real_t newWeight = weights[weightIdx] + delta;
+            real_t newWeight = (1.0 - l2norm) * weights[weightIdx] + delta;
 
             return newWeight;
         }
@@ -70,6 +71,7 @@ namespace optimizers {
         internal::UpdateWeightFn updateWeightFn;
         updateWeightFn.learningRate = m_learningRate;
         updateWeightFn.momentum     = m_momentum;
+        updateWeightFn.l2norm       = m_l2norm;
 
         for (size_t i = 1; i < this->_neuralNetwork().layers().size()-1; ++i) {
         	layers::TrainableLayer<TDevice> *layer = dynamic_cast<layers::TrainableLayer<TDevice>*>(this->_neuralNetwork().layers()[i].get());
@@ -91,10 +93,11 @@ namespace optimizers {
     SteepestDescentOptimizer<TDevice>::SteepestDescentOptimizer(
         NeuralNetwork<TDevice> &neuralNetwork, data_sets::DataSet &trainingSet, data_sets::DataSet &validationSet,
         data_sets::DataSet &testSet, int maxEpochs, int maxEpochsNoBest, int validateEvery, int testEvery, 
-        real_t learningRate, real_t momentum)
+        real_t learningRate, real_t momentum, real_t l2norm)
         : Optimizer<TDevice>(neuralNetwork, trainingSet, validationSet, testSet, maxEpochs, maxEpochsNoBest, validateEvery, testEvery)
         , m_learningRate    (learningRate)
         , m_momentum        (momentum)
+        , m_l2norm          (l2norm)
     {
         // intialize the weight deltas vectors with zeros
         m_weightDeltas = this->_curWeightUpdates();

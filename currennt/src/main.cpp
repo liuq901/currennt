@@ -144,7 +144,7 @@ int trainerMain(const Configuration &config)
                 optimizer.reset(new optimizers::SteepestDescentOptimizer<TDevice>(
                     neuralNetwork, *trainingSet, *validationSet, *testSet,
                     config.maxEpochs(), config.maxEpochsNoBest(), config.validateEvery(), config.testEvery(),
-                    config.learningRate(), config.momentum()
+                    config.learningRate(), config.momentum(), config.l2norm()
                     ));
                 break;
 
@@ -291,7 +291,41 @@ int main(int argc, const char *argv[])
 
     // run the execution device specific main function
     if (config.useCuda())
+    {
+        //get number of devices
+        int N_GPU = 0;
+        cudaGetDeviceCount(&N_GPU);
+
+        //select device if more than one
+        if(N_GPU > 0) {
+            size_t free, total;
+            std::vector<float> free_mem_ratio;
+            cudaDeviceProp prop;
+            //get ratios of memory use
+            std::cout << "Selecting from " << N_GPU << " GPU(s)\n";
+            for(int n=0; n<N_GPU; n++) {
+                std::cout << "cudaSetDevice(" << n << "): ";
+                cudaSetDevice(n);//context created by cuSafeCall(...)
+                cudaGetDeviceProperties(&prop, n);
+                std::cout << prop.name << "\t";
+                cudaMemGetInfo(&free,&total);
+                std::cout << "free: " << free/1024/1024 << "M, "
+                    << "total: "<< total/1024/1024 << "M, "
+                    << "ratio: "<< free/(float)total << "\n";
+                free_mem_ratio.push_back(free/(float)total);
+                cudaThreadExit();//destroy context
+            }
+            //find GPU with max free memory
+            int max_id=0;
+            for(int n=1; n<free_mem_ratio.size(); n++) {
+                if(free_mem_ratio[n] > free_mem_ratio[max_id]) max_id=n;
+            }
+            std::cout << "Selected device: " << max_id << " (automatically)\n\n";
+            cudaSetDevice(max_id);
+        }
+
         return trainerMain<Gpu>(config);
+    }
     else
         return trainerMain<Cpu>(config);
 }
@@ -411,6 +445,7 @@ void printOptimizer(const Configuration &config, const optimizers::Optimizer<TDe
         printf("Test error every:          %d\n", config.testEvery());
         printf("Learning rate:             %g\n", (double)config.learningRate());
         printf("Momentum:                  %g\n", (double)config.momentum());
+        printf("L2 norm:                   %g\n", (double)config.l2norm());
         printf("\n");
     }
 }

@@ -138,6 +138,7 @@ Configuration::Configuration(int argc, const char *argv[])
         ("optimizer",           po::value(&optimizerString)    ->default_value("steepest_descent"),    "sets the optimizer used for updating the weights")
         ("learning_rate",       po::value(&m_learningRate)     ->default_value((real_t)1e-5, "1e-5"),  "sets the learning rate for the steepest descent optimizer")
         ("momentum",            po::value(&m_momentum)         ->default_value((real_t)0.9,  "0.9"),   "sets the momentum for the steepest descent optimizer")
+        ("l2_norm",             po::value(&m_l2norm)           ->default_value((real_t)0.0,  "0"),     "sets the l2 norm for the steepest descent optimizer")
         ("save_network",        po::value(&m_trainedNetwork)   ->default_value("trained_network.jsn"), "sets the file name of the trained network that will be produced")
         ;
 
@@ -402,6 +403,11 @@ real_t Configuration::learningRate() const
 real_t Configuration::momentum() const
 {
     return m_momentum;
+}
+
+real_t Configuration::l2norm() const
+{
+    return m_l2norm;
 }
 
 const std::string& Configuration::networkFile() const

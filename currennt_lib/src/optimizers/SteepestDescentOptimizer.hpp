@@ -43,6 +43,7 @@ namespace optimizers {
     private:
         const real_t m_learningRate;
         const real_t m_momentum;
+        const real_t m_l2norm;
 
         std::vector<real_vector> m_weightDeltas;
         
@@ -75,7 +76,8 @@ namespace optimizers {
             int validateEvery,
             int testEvery,
             real_t learningRate,
-            real_t momentum
+            real_t momentum,
+            real_t l2norm
             );
 
         /**

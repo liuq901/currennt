@@ -59,19 +59,19 @@ namespace {
                 return SKIP_MARKER;
 
             // search for the min and max output
-            real_t max = helpers::NumericLimits<real_t>::min();
+            real_t max = -helpers::NumericLimits<real_t>::max();
             real_t min = helpers::NumericLimits<real_t>::max();
 
             const real_t *offOutputs = &outputs[patIdx * layerSize];
 
             for (int i = 0; i < layerSize; ++i) {
                 real_t x = offOutputs[i];
-                min = helpers::min(min, x);
                 max = helpers::max(max, x);
+                min = helpers::min(min, x);
             }
 
             // calculate the offset
-            real_t offset = (real_t)0.5 * (min + max);
+            real_t offset = max;
 
             return offset;
         }
