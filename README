@@ -438,7 +438,7 @@ Available post output layers:
 * rmse                                  = Root Mean Squared Error objective function
 * binary_classification                 = To be used with a ff logistic output layer
 * multiclass_classification             = To be used with a softmax output layer
-* connectionist_temporal_classification = To be used with a CTC layer
+* connectionist_temporal_classification = To be used with a softmax output layer
 
 
 +=============================================================================+
